@@ -3,12 +3,18 @@ package main
 import (
 	"fmt"
 	"github.com/gorilla/mux"
+	"linkscape/controllers"
+	"linkscape/db_connection"
 	"log"
 	"net/http"
 )
 
 func main(){
-	r := mux.NewRouter()
-	fmt.Println("Starting server on the port 8080")
-	log.Fatal(http.ListenAndServe(":8080", r))
+		router := mux.NewRouter()
+		
+
+	fmt.Println("Starting server on the port 5000")
+	fmt.Println(dbconnection.Createconnection())
+
+	log.Fatal(http.ListenAndServe(":5000", router))
 }
