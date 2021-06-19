@@ -84,6 +84,8 @@ func CreateLink(w http.ResponseWriter, r *http.Request) {
 func GetLink(w http.ResponseWriter, r *http.Request){
 	w.Header().Set("Content-Type", "application/json")
 	w.Header().Set("Access-Control-Allow-Origin", "*")	
+	w.Header().Set("Access-Control-Allow-Methods", "GET")
+
 	// Grabbing the id from the url
 	params := mux.Vars(r)
 	id, err := strconv.Atoi(params["id"])
@@ -105,20 +107,44 @@ func GetLink(w http.ResponseWriter, r *http.Request){
 		res := response{
 			Message: "User created successfully",
 		   }
-	   
 		json.NewEncoder(w).Encode(res)
     case nil:
            json.NewEncoder(w).Encode(link)
     default:
         log.Fatalf("Unable to scan the row. %v", errFromStruct)
-    }
+	}
 
-	
+ }
 
-
-
-
-
-
-
+func GetAllLink(w http.ResponseWriter,  r *http.Request){
+	w.Header().Set("Content-Type", "application/json")
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Methods", "GET")
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+	db := dbconnection.Createconnection()
+	// close the db connection
+	defer db.Close()
+	var links []Models.Link
+	var link Models.Link
+	// sql statement
+	sqlStatement := `SELECT * FROM links`
+	// Execute sql statement
+	row,err := db.Query(sqlStatement)																				
+	if(err != nil){
+		res := response{
+			Message: "An error occured",
+		   }
+		json.NewEncoder(w).Encode(res)
+	}
+	for row.Next(){
+			errFromStruct := row.Scan(&link.ID,&link.Title,&link.Link,&link.CategoryId,&link.UserId)
+			if errFromStruct != nil {
+				res := response{
+					Message: "An error occured",
+				   }
+				json.NewEncoder(w).Encode(res)
+			}
+			links = append(links,link)
+		}
+		json.NewEncoder(w).Encode(links)
 }
