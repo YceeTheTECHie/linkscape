@@ -36,7 +36,7 @@ func Welcome(w http.ResponseWriter, r *http.Request){
 
 func CreateLink(w http.ResponseWriter, r *http.Request) {
 	//setting up headers
-	w.Header().Set("Context-Type", "application/x-www-form-urlencoded")
+	w.Header().Set("Content-Type", "application/json")
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Access-Control-Allow-Methods", "POST")
 	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
@@ -76,20 +76,17 @@ func CreateLink(w http.ResponseWriter, r *http.Request) {
 		Url: linkUrl,
         Message: "Link added successfully",
     }
-
+// sending back json
 	json.NewEncoder(w).Encode(res)
-
-    // return the inserted id
 }
 
 //get link by id
 func GetLink(w http.ResponseWriter, r *http.Request){
-	w.Header().Set("Context-Type", "application/json")
+	w.Header().Set("Content-Type", "application/json")
 	w.Header().Set("Access-Control-Allow-Origin", "*")	
 	// Grabbing the id from the url
 	params := mux.Vars(r)
 	id, err := strconv.Atoi(params["id"])
-	fmt.Println(id)
 	if err != nil {
 		log.Fatalf("Unable to convert string into int %v",err)
 	}
