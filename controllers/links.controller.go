@@ -104,8 +104,10 @@ func GetLink(w http.ResponseWriter, r *http.Request) {
 	errFromStruct := row.Scan(&link.ID, &link.Title, &link.Link, &link.CategoryId, &link.UserId)
 	switch errFromStruct {
 	case sql.ErrNoRows:
+		w.WriteHeader(http.StatusNotFound)
 		res := response{
-			Message: "User created successfully",
+			Status: false,
+			Message: "Sorry, link does not exist",
 		}
 		json.NewEncoder(w).Encode(res)
 	case nil:
@@ -187,13 +189,14 @@ func UpdateLink(w http.ResponseWriter, r *http.Request) {
 	if rowsAffected > 0 {
 		res := response{
 		Status : true,
-		Message: "Data updated succesfully!",
+		Message: "link updated succesfully!",
 		}
 	json.NewEncoder(w).Encode(res)
 	}else{
+		w.WriteHeader(http.StatusNotFound)
 		res := response{
 			Status : false,
-			Message: "Could not update, Data not found",
+			Message: "Could not update, link not found",
 	}
 	json.NewEncoder(w).Encode(res)
 
@@ -208,7 +211,7 @@ func DeleteLink(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Access-Control-Allow-Methods", "DELETE")
-	w.Header().Set("	Access-Control-Allow-Headers", "Content-Type")
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
 
 	params := mux.Vars(r)
 	id, err := strconv.Atoi(params["id"])
@@ -242,13 +245,14 @@ func DeleteLink(w http.ResponseWriter, r *http.Request) {
 	if rowsAffected > 0 {
 		res := response{
 		Status : true,
-		Message: "Data deleted succesfully!",
+		Message: "link deleted succesfully!",
 		}
 	json.NewEncoder(w).Encode(res)
 	}else{
+		w.WriteHeader(http.StatusNotFound)
 		res := response{
 			Status : false,
-			Message: "Could not delete, Data not found",
+			Message: "Could not delete, link does not exist",
 	}
 	json.NewEncoder(w).Encode(res)
 
