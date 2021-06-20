@@ -16,6 +16,8 @@ func main(){
 	router.HandleFunc("/api/links", controllers.GetAllLink).Methods("GET", "OPTIONS")
 	router.HandleFunc("/api/link/{id}", controllers.GetLink).Methods("GET", "OPTIONS")
 	router.HandleFunc("/api/link/{id}", controllers.UpdateLink).Methods("PUT", "OPTIONS")
+	router.HandleFunc("/api/link/{id}", controllers.DeleteLink).Methods("DELETE", "OPTIONS")
+
 
 	router.HandleFunc("/", controllers.Welcome).Methods("POST", "OPTIONS")
 	fmt.Println("Starting server on the port 5000")

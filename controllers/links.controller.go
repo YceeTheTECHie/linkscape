@@ -202,3 +202,58 @@ func UpdateLink(w http.ResponseWriter, r *http.Request) {
 	fmt.Printf("Total rows/record affected %v", rowsAffected)
 
 }
+
+
+func DeleteLink(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Methods", "DELETE")
+	w.Header().Set("	Access-Control-Allow-Headers", "Content-Type")
+
+	params := mux.Vars(r)
+	id, err := strconv.Atoi(params["id"])
+	var link Models.Link
+
+	if err != nil {
+		log.Fatalf("Unable to convert string into int %v", err)
+	}
+	err = json.NewDecoder(r.Body).Decode(&link)
+
+    if err != nil {
+        log.Fatalf("Unable to decode the request body.  %v", err)
+    }
+	db := dbconnection.Createconnection()
+	// close the db connection
+	defer db.Close()
+	sqlStatement := `DELETE FROM links WHERE linkId=$1`
+	// execute the sql statement
+	result, err := db.Exec(sqlStatement,id)
+
+	if err != nil {
+		log.Fatalf("Unable to execute the query. %v", err)
+	}
+
+	// check how many rows affected
+	rowsAffected, err := result.RowsAffected()
+
+	if err != nil {
+		log.Fatalf("Error while checking the affected rows. %v", err)
+	}
+	if rowsAffected > 0 {
+		res := response{
+		Status : true,
+		Message: "Data deleted succesfully!",
+		}
+	json.NewEncoder(w).Encode(res)
+	}else{
+		res := response{
+			Status : false,
+			Message: "Could not delete, Data not found",
+	}
+	json.NewEncoder(w).Encode(res)
+
+	}	
+	
+	fmt.Printf("Total rows/record affected %v", rowsAffected)
+
+}
