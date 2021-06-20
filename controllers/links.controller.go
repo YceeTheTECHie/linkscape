@@ -188,9 +188,16 @@ func UpdateLink(w http.ResponseWriter, r *http.Request) {
 		res := response{
 		Status : true,
 		Message: "Data updated succesfully!",
+		}
+	json.NewEncoder(w).Encode(res)
+	}else{
+		res := response{
+			Status : false,
+			Message: "Could not update, Data not found",
 	}
 	json.NewEncoder(w).Encode(res)
-}	
+
+	}	
 	
 	fmt.Printf("Total rows/record affected %v", rowsAffected)
 
