@@ -9,7 +9,6 @@ import (
 	"log"
 	"net/http"
 	"strconv"
-
 	"github.com/gorilla/mux"
 	_ "github.com/lib/pq"
 )
@@ -53,9 +52,9 @@ func CreateLink(w http.ResponseWriter, r *http.Request) {
 	// create the postgres db connection
 
 	db := dbconnection.Createconnection()
+	sqlStatement := `INSERT INTO links (title, link, categoryid, userid) VALUES ($1, $2, $3, $4) RETURNING linkId, link,title`
 	// close the db connection
 	defer db.Close()
-	sqlStatement := `INSERT INTO links (title, link, categoryid, userid) VALUES ($1, $2, $3, $4) RETURNING linkId, link,title`
 	// the inserted id will store in this id
 	var linkId int64
 	var linkTitle, linkUrl string
@@ -124,8 +123,6 @@ func GetAllLink(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Methods", "GET")
 	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
 	db := dbconnection.Createconnection()
-	// close the db connection
-	defer db.Close()
 	var links []Models.Link
 	var link Models.Link
 	// sql statement
@@ -149,6 +146,8 @@ func GetAllLink(w http.ResponseWriter, r *http.Request) {
 		links = append(links, link)
 	}
 	json.NewEncoder(w).Encode(links)
+	// close the db connection
+	defer db.Close()
 }
 
 func UpdateLink(w http.ResponseWriter, r *http.Request) {
@@ -170,8 +169,7 @@ func UpdateLink(w http.ResponseWriter, r *http.Request) {
         log.Fatalf("Unable to decode the request body.  %v", err)
     }
 	db := dbconnection.Createconnection()
-	// close the db connection
-	defer db.Close()
+
 	sqlStatement := `UPDATE links SET title=$2, link=$3, categoryid=$4, userId=$5 WHERE linkId=$1`
 	// execute the sql statement
 	result, err := db.Exec(sqlStatement,id, link.Title, link.Link, link.CategoryId, link.UserId)
@@ -204,6 +202,8 @@ func UpdateLink(w http.ResponseWriter, r *http.Request) {
 	
 	fmt.Printf("Total rows/record affected %v", rowsAffected)
 
+		// close the db connection
+		defer db.Close()
 }
 
 
@@ -226,8 +226,7 @@ func DeleteLink(w http.ResponseWriter, r *http.Request) {
         log.Fatalf("Unable to decode the request body.  %v", err)
     }
 	db := dbconnection.Createconnection()
-	// close the db connection
-	defer db.Close()
+
 	sqlStatement := `DELETE FROM links WHERE linkId=$1`
 	// execute the sql statement
 	result, err := db.Exec(sqlStatement,id)
@@ -259,5 +258,7 @@ func DeleteLink(w http.ResponseWriter, r *http.Request) {
 	}	
 	
 	fmt.Printf("Total rows/record affected %v", rowsAffected)
+		// close the db connection
+		defer db.Close()
 
 }
