@@ -2,11 +2,13 @@ package main
 
 import (
 	"fmt"
-	"github.com/gorilla/mux"
 	"linkscape/controllers"
 	"linkscape/db_connection"
 	"log"
 	"net/http"
+	"os"
+
+	"github.com/gorilla/mux"
 )
 
 	
@@ -20,7 +22,8 @@ func main(){
 
 
 	router.HandleFunc("/", controllers.Welcome).Methods("POST", "OPTIONS")
+	port := os.Getenv("PORT")
 	fmt.Println("Starting server on the port 5000")
 	fmt.Println(dbconnection.Createconnection())
-	log.Fatal(http.ListenAndServe(":5000", router))
+	log.Fatal(http.ListenAndServe(port, router))
 }
